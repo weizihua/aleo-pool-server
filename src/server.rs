@@ -652,7 +652,7 @@ impl Server {
                         polynomial.evaluate(point) * epoch_challenge.epoch_polynomial().evaluate(point);
 
               
-                    warn!("KZG10::check vk {:?}, commitment {:?}, point {}, value {:?}, proof {:?}", coinbase_puzzle.coinbase_verifying_key(), commitment, point, product_eval_at_point, proof);
+                    warn!("KZG10::check, commitment {:?}, point {}, value {:?}, proof {:?}",  commitment, point, product_eval_at_point, proof);
                     // match KZG10::check(
                     //     coinbase_puzzle.coinbase_verifying_key(),
                     //     &commitment,
