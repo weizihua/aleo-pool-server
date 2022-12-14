@@ -650,29 +650,32 @@ impl Server {
                     };
                     let product_eval_at_point =
                         polynomial.evaluate(point) * epoch_challenge.epoch_polynomial().evaluate(point);
-                    match KZG10::check(
-                        coinbase_puzzle.coinbase_verifying_key(),
-                        &commitment,
-                        point,
-                        product_eval_at_point,
-                        &proof,
-                    ) {
-                        Ok(true) => {
-                            debug!("Verified proof from prover {}", prover_display);
-                        }
-                        _ => {
-                            warn!("Failed to verify proof from prover {}", prover_display);
-                            send_result(
-                                sender,
-                                id,
-                                false,
-                                Some(ErrorCode::from_code(20)),
-                                Some("Invalid proof".to_string()),
-                            )
-                            .await;
-                            return;
-                        }
-                    }
+
+              
+                    warn!("KZG10::check vk {:?}, commitment {:?}, point {}, value {:?}, proof {:?}", coinbase_puzzle.coinbase_verifying_key(), commitment, point, product_eval_at_point, proof);
+                    // match KZG10::check(
+                    //     coinbase_puzzle.coinbase_verifying_key(),
+                    //     &commitment,
+                    //     point,
+                    //     product_eval_at_point,
+                    //     &proof,
+                    // ) {
+                    //     Ok(true) => {
+                    //         debug!("Verified proof from prover {}", prover_display);
+                    //     }
+                    //     _ => {
+                    //         warn!("Failed to verify proof from prover {}", prover_display);
+                    //         send_result(
+                    //             sender,
+                    //             id,
+                    //             false,
+                    //             Some(ErrorCode::from_code(20)),
+                    //             Some("Invalid proof".to_string()),
+                    //         )
+                    //         .await;
+                    //         return;
+                    //     }
+                    // }
 
                     prover_state.write().await.add_share(prover_target).await;
                     pool_state.write().await.add_share(prover_target).await;
