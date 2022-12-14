@@ -467,6 +467,10 @@ impl Server {
                 }
             }
             ServerMessage::ProverSubmit(id, peer_addr, epoch_number, nonce, commitment, proof) => {
+
+                info!("ServerMessage::ProverSubmit id: {:?}, peer_addr {}, epoch_number  {},  nonce {},  commitment {:?}, proof {:?},", id, peer_addr, epoch_number, nonce, commitment, proof);
+
+
                 let prover_states = self.prover_states.clone();
                 let pool_state = self.pool_state.clone();
                 let authenticated_provers = self.authenticated_provers.clone();
