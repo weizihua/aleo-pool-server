@@ -483,6 +483,28 @@ impl Server {
                 let global_proof_target = self.latest_proof_target.load(Ordering::SeqCst);
                 let pool_address = self.pool_address;
                 let coinbase_puzzle = self.coinbase_puzzle.clone();
+
+                info!(
+                    // "prover_states: {:?}, pool_state {}, authenticated_provers  {},  
+                    "latest_epoch_number {},  current_global_difficulty_modifier {:?}, 
+                    latest_epoch_challenge {:?}, accounting_sender: {:?}, 
+                    validator_sender , seen_nonce  , 
+                    global_proof_target {},  pool_address {:?}, coinbase_puzzle,", 
+                    // prover_states, 
+                    // pool_state, 
+                    // authenticated_provers, 
+                    latest_epoch_number, 
+                    current_global_difficulty_modifier, 
+                    latest_epoch_challenge,
+
+                    accounting_sender, 
+                    // validator_sender, 
+                    // seen_nonce, 
+                    global_proof_target, 
+                    pool_address, 
+                    // coinbase_puzzle,
+                );
+                
                 task::spawn(async move {
                     async fn send_result(
                         sender: &Sender<StratumMessage>,
@@ -653,29 +675,29 @@ impl Server {
 
               
                     warn!("KZG10::check, commitment {:?}, point {}, value {:?}, proof {:?}",  commitment, point, product_eval_at_point, proof);
-                    // match KZG10::check(
-                    //     coinbase_puzzle.coinbase_verifying_key(),
-                    //     &commitment,
-                    //     point,
-                    //     product_eval_at_point,
-                    //     &proof,
-                    // ) {
-                    //     Ok(true) => {
-                    //         debug!("Verified proof from prover {}", prover_display);
-                    //     }
-                    //     _ => {
-                    //         warn!("Failed to verify proof from prover {}", prover_display);
-                    //         send_result(
-                    //             sender,
-                    //             id,
-                    //             false,
-                    //             Some(ErrorCode::from_code(20)),
-                    //             Some("Invalid proof".to_string()),
-                    //         )
-                    //         .await;
-                    //         return;
-                    //     }
-                    // }
+                    match KZG10::check(
+                        coinbase_puzzle.coinbase_verifying_key(),
+                        &commitment,
+                        point,
+                        product_eval_at_point,
+                        &proof,
+                    ) {
+                        Ok(true) => {
+                            debug!("Verified proof from prover {}", prover_display);
+                        }
+                        _ => {
+                            warn!("Failed to verify proof from prover {}", prover_display);
+                            send_result(
+                                sender,
+                                id,
+                                false,
+                                Some(ErrorCode::from_code(20)),
+                                Some("Invalid proof".to_string()),
+                            )
+                            .await;
+                            return;
+                        }
+                    }
 
                     prover_state.write().await.add_share(prover_target).await;
                     pool_state.write().await.add_share(prover_target).await;
